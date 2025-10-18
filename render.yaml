@@ -1,0 +1,45 @@
+services:
+  # The Game Maker - Web Service
+  - type: web
+    name: the-game-maker
+    runtime: python
+    plan: free
+    region: oregon
+    
+    # Build settings
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r backend/requirements.txt
+    
+    # Start command
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --chdir backend app:app
+    
+    # Environment variables
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      
+      - key: ANTHROPIC_API_KEY
+        sync: false  # This will prompt you to set it in Render dashboard
+      
+      - key: FLASK_ENV
+        value: production
+      
+      - key: SECRET_KEY
+        generateValue: true  # Render will auto-generate a secure secret
+      
+      - key: SESSION_TYPE
+        value: filesystem
+      
+      - key: LOG_LEVEL
+        value: INFO
+    
+    # Health check
+    healthCheckPath: /api/health
+    
+    # Auto-deploy settings
+    autoDeploy: true
+    
+    # Scaling (free tier = 1 instance)
+    numInstances: 1
+

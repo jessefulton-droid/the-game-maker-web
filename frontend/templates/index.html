@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Game Maker - Turn Your Book Into a Game!</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'bounce-subtle': 'bounceSubtle 0.6s ease-in-out',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 5px currentColor' },
+                            '50%': { opacity: '0.7', boxShadow: '0 0 20px currentColor' }
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen">
+    
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-purple-300 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-pink-300 to-transparent rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="relative bg-white/80 backdrop-blur-lg shadow-xl border-b border-purple-100">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent animate-slide-up">
+                    🎮 The Game Maker 📚
+                </h1>
+                <p class="text-gray-600 mt-3 text-lg animate-fade-in" style="animation-delay: 0.2s;">
+                    Turn your favorite book into a playable arcade game!
+                </p>
+                <div class="flex justify-center gap-2 mt-4 text-sm text-gray-500 animate-fade-in" style="animation-delay: 0.4s;">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">✨ AI-Powered</span>
+                    <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full">🎤 Voice-First</span>
+                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full">🕹️ Instant Play</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="relative container mx-auto px-4 py-8 max-w-5xl">
+        
+        <!-- Phase Indicator -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-purple-100 p-6 mb-6 animate-slide-up">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <div class="w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse-glow" id="status-indicator"></div>
+                        <div class="absolute inset-0 w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-ping opacity-75"></div>
+                    </div>
+                    <div>
+                        <span class="text-gray-800 font-semibold text-lg" id="phase-text">Getting ready...</span>
+                        <div class="text-sm text-gray-500 mt-0.5" id="agent-name"></div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-purple-300" id="phase-dot-1"></div>
+                        <div class="w-2 h-2 rounded-full bg-purple-300" id="phase-dot-2"></div>
+                        <div class="w-2 h-2 rounded-full bg-purple-300" id="phase-dot-3"></div>
+                        <div class="w-2 h-2 rounded-full bg-purple-300" id="phase-dot-4"></div>
+                        <div class="w-2 h-2 rounded-full bg-purple-300" id="phase-dot-5"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Container -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-purple-100 mb-6 overflow-hidden animate-slide-up" style="animation-delay: 0.1s;">
+            
+            <!-- Messages Area -->
+            <div class="h-[500px] overflow-y-auto p-6 space-y-4 scroll-smooth" id="messages-container">
+                <!-- Messages will be added here dynamically -->
+                <div class="text-center text-gray-400 py-12">
+                    <div class="text-6xl mb-4 animate-bounce-subtle">💬</div>
+                    <p class="text-lg font-medium">Ready to create your game!</p>
+                    <p class="text-sm mt-2">Click the microphone or type to begin...</p>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="border-t border-purple-100 bg-gradient-to-br from-purple-50/50 to-pink-50/50 backdrop-blur-sm p-6">
+                <div class="flex space-x-3">
+                    <!-- Voice Button -->
+                    <button 
+                        id="voice-button" 
+                        class="group relative bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white p-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                        title="Click to speak">
+                        <span class="text-2xl">🎤</span>
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </button>
+                    
+                    <!-- Text Input -->
+                    <input 
+                        type="text" 
+                        id="message-input" 
+                        placeholder="Type your message or click the microphone..."
+                        class="flex-1 px-5 py-4 bg-white border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-300 focus:border-purple-400 transition-all duration-300 placeholder-gray-400 text-gray-800"
+                        autocomplete="off">
+                    
+                    <!-- Send Button -->
+                    <button 
+                        id="send-button" 
+                        class="bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
+                        <span class="flex items-center gap-2">
+                            Send
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+                
+                <!-- Voice Status -->
+                <div id="voice-status" class="text-sm text-purple-600 font-medium mt-3 hidden flex items-center gap-2 animate-pulse">
+                    <div class="w-2 h-2 bg-purple-600 rounded-full animate-ping"></div>
+                    🎤 Listening...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Result (shown when complete) -->
+        <div id="game-result" class="relative overflow-hidden bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500 rounded-3xl shadow-2xl p-12 text-center hidden animate-slide-up">
+            <!-- Celebratory Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute inset-0" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+            
+            <!-- Content -->
+            <div class="relative z-10">
+                <!-- Animated Icon -->
+                <div class="text-8xl mb-6 animate-bounce-subtle">
+                    🎉
+                </div>
+                
+                <h2 class="text-5xl font-black text-white mb-4 drop-shadow-lg">
+                    Your Game is Ready!
+                </h2>
+                <p class="text-white/90 text-xl mb-8 max-w-2xl mx-auto">
+                    Your story has been transformed into an epic arcade adventure! Click below to play.
+                </p>
+                
+                <!-- Play Button -->
+                <a href="/game" target="_blank" class="group inline-flex items-center gap-3 bg-white text-purple-600 px-10 py-5 rounded-2xl font-black text-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 active:scale-95 mb-6">
+                    <span>Play Now!</span>
+                    <span class="text-3xl group-hover:animate-bounce-subtle">🎮</span>
+                </a>
+                
+                <!-- Secondary Actions -->
+                <div class="flex justify-center gap-4 mt-8">
+                    <button id="start-over" class="px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30">
+                        ↺ Create Another Game
+                    </button>
+                </div>
+                
+                <!-- Fun Stats -->
+                <div class="mt-10 pt-8 border-t border-white/20">
+                    <div class="grid grid-cols-3 gap-4 max-w-lg mx-auto text-white">
+                        <div class="backdrop-blur-sm bg-white/10 rounded-xl p-4">
+                            <div class="text-3xl font-bold">✨</div>
+                            <div class="text-sm mt-1">AI-Powered</div>
+                        </div>
+                        <div class="backdrop-blur-sm bg-white/10 rounded-xl p-4">
+                            <div class="text-3xl font-bold">🎨</div>
+                            <div class="text-sm mt-1">Custom Made</div>
+                        </div>
+                        <div class="backdrop-blur-sm bg-white/10 rounded-xl p-4">
+                            <div class="text-3xl font-bold">🚀</div>
+                            <div class="text-sm mt-1">Ready to Play</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- Footer -->
+    <footer class="relative text-center py-12 mt-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-100">
+                <p class="text-gray-700 text-lg font-medium mb-2">
+                    Made with ❤️ for Farrah and aspiring game makers everywhere!
+                </p>
+                <p class="text-gray-500 text-sm">
+                    Powered by Claude AI • Built with Python, Flask & Phaser.js
+                </p>
+                <div class="mt-4 flex justify-center gap-6 text-sm text-gray-600">
+                    <span class="flex items-center gap-1">
+                        <span class="text-purple-500">●</span> Voice-First
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <span class="text-pink-500">●</span> Multi-Agent AI
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <span class="text-indigo-500">●</span> Instant Games
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="/static/js/voice.js"></script>
+    <script src="/static/js/app.js"></script>
+    
+</body>
+</html>
+

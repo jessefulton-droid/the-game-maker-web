@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Your Game - The Game Maker</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center">
+    
+    <!-- Loading State -->
+    <div id="loading-container" class="text-center">
+        <div class="bg-white/20 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/30 max-w-md">
+            <div class="text-8xl mb-6 loading-pulse">🎮</div>
+            <h1 class="text-4xl font-black text-white mb-4 drop-shadow-lg">
+                Loading Your Game
+            </h1>
+            <p class="text-white/90 text-lg mb-8">
+                Get ready for an epic adventure based on your favorite book!
+            </p>
+            
+            <!-- Spinner -->
+            <div class="flex justify-center mb-6">
+                <svg class="loading-spinner h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            
+            <p class="text-white/70 text-sm">
+                This will just take a moment...
+            </p>
+        </div>
+    </div>
+    
+    <!-- Error State (hidden by default) -->
+    <div id="error-container" class="hidden text-center">
+        <div class="bg-white rounded-3xl p-12 shadow-2xl max-w-md">
+            <div class="text-6xl mb-4">😕</div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                Oops! Something Went Wrong
+            </h1>
+            <p class="text-gray-600 mb-8" id="error-message">
+                We couldn't load your game. Please try creating a new one.
+            </p>
+            <a href="/" class="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg">
+                ← Back to Chat
+            </a>
+        </div>
+    </div>
+    
+    <!-- Game Container (hidden by default, will be shown when loaded) -->
+    <div id="game-container" class="hidden">
+        <!-- Game will be injected here -->
+    </div>
+    
+    <script>
+        // Get session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session');
+        
+        async function loadGame() {
+            if (!sessionId) {
+                showError('No session ID provided. Please create a game first.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/game/${sessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Game not found or not ready yet');
+                }
+                
+                const gameHTML = await response.text();
+                
+                // Hide loading, inject game HTML
+                document.getElementById('loading-container').classList.add('hidden');
+                const gameContainer = document.getElementById('game-container');
+                gameContainer.innerHTML = gameHTML;
+                gameContainer.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error loading game:', error);
+                showError('Could not load your game. It may not be ready yet.');
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loading-container').classList.add('hidden');
+            document.getElementById('error-container').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+        
+        // Load game on page load
+        window.addEventListener('DOMContentLoaded', loadGame);
+    </script>
+    
+</body>
+</html>
+

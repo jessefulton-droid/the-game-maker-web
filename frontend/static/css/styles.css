@@ -1,0 +1,231 @@
+/**
+ * The Game Maker - Custom Styles
+ * Additional styling beyond Tailwind CSS
+ */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for messages container */
+#messages-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+#messages-container::-webkit-scrollbar-track {
+    background: linear-gradient(to bottom, #f3e8ff, #fce7f3);
+    border-radius: 10px;
+}
+
+#messages-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #a855f7, #ec4899);
+    border-radius: 10px;
+    border: 2px solid #f3e8ff;
+}
+
+#messages-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #9333ea, #db2777);
+}
+
+/* Button hover effects */
+button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Input focus effect */
+input:focus {
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+}
+
+/* Message bubble styles */
+.message-bubble {
+    max-width: 80%;
+    animation: messageSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.message-bubble-user {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    color: white;
+    border-radius: 1.5rem 1.5rem 0.25rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.message-bubble-agent {
+    background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%);
+    color: #1f2937;
+    border-radius: 1.5rem 1.5rem 1.5rem 0.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e9d5ff;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Loading indicator */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes typingDots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+.typing-indicator::after {
+    content: '...';
+    animation: typingDots 1.5s infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Phase indicator pulse */
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 8px currentColor;
+    }
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 20px currentColor;
+    }
+}
+
+.agent-thinking {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Shimmer effect for special elements */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Glass morphism effect */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Hover lift effect */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #messages-container {
+        height: 400px !important;
+    }
+    
+    .message-bubble {
+        max-width: 90%;
+    }
+    
+    #game-result {
+        padding: 2rem !important;
+    }
+    
+    #game-result h2 {
+        font-size: 2rem !important;
+    }
+    
+    #game-result a {
+        font-size: 1.25rem !important;
+        padding: 1rem 2rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    header h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .message-bubble {
+        font-size: 0.9rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    header, footer, #input-area {
+        display: none;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid #a855f7;
+    outline-offset: 2px;
+}
+
