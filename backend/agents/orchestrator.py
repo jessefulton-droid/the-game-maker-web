@@ -159,10 +159,14 @@ class GameOrchestrator:
         )
         
         if not result.get("success"):
+            # Log the actual error for debugging
+            error_msg = result.get("error", "Unknown error")
+            print(f"Story Analyst Error: {error_msg}")  # Debug output
             return {
                 "message": result.get("message", "Sorry, I had trouble understanding. Could you try again?"),
                 "phase": self.phase.value,
-                "agent": "story_analyst"
+                "agent": "story_analyst",
+                "error": error_msg  # Include error in response for debugging
             }
         
         response = {

@@ -36,10 +36,18 @@ class StoryAnalystAgent:
     def __init__(self):
         """Initialize the Story Analyst agent with Claude and tools."""
         
+        # Get API key and verify it's loaded
+        api_key = os.getenv('ANTHROPIC_API_KEY')
+        if not api_key:
+            raise ValueError("ANTHROPIC_API_KEY not found in environment variables")
+        
+        # Debug: Log key info (first/last chars only for security)
+        print(f"[StoryAnalyst] Initializing with API key: {api_key[:15]}...{api_key[-10:]} (length: {len(api_key)})")
+        
         # Initialize Claude model
         self.llm = ChatAnthropic(
             model="claude-sonnet-4-20250514",
-            anthropic_api_key=os.getenv('ANTHROPIC_API_KEY'),
+            anthropic_api_key=api_key,
             temperature=0.7,  # Slightly creative but focused
             max_tokens=4096
         )

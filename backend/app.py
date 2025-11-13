@@ -10,6 +10,11 @@ from flask_session import Session
 from dotenv import load_dotenv
 
 # Load environment variables
+# Load from project root (parent directory of backend/)
+import pathlib
+env_path = pathlib.Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
+# Also try loading from current directory as fallback
 load_dotenv()
 
 # Initialize Flask app
@@ -111,17 +116,25 @@ def send_message():
         # Process message through orchestrator
         response = orchestrator.process_message(data['message'])
         
+        # Log any errors from the agent
+        if response.get('error'):
+            app.logger.error(f"Agent error: {response.get('error')}")
+            print(f"Agent error: {response.get('error')}")  # Also print to console
+        
         return jsonify({
             'success': True,
             'message': response['message'],
             'phase': response['phase'],
             'agent': response.get('agent'),
             'is_complete': response.get('is_complete', False),
-            'game_data': response.get('game_data')
+            'game_data': response.get('game_data'),
+            'error': response.get('error')  # Include error in response for debugging
         })
     
     except Exception as e:
         app.logger.error(f"Error processing message: {str(e)}")
+        import traceback
+        traceback.print_exc()  # Print full traceback
         return jsonify({
             'success': False,
             'error': f'An error occurred: {str(e)}'
@@ -203,5 +216,5 @@ def health_check():
 
 if __name__ == '__main__':
     # Development server
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
 
